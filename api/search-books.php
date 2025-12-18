@@ -79,7 +79,7 @@ $result = $stmt->get_result();
 
 $books = [];
 while ($row = $result->fetch_assoc()) {
-    if (!empty($row['isbn'])) {
+    if (empty($row['cover_url']) && !empty($row['isbn'])) {
         $row['cover_url'] = 'https://covers.openlibrary.org/b/isbn/' . $row['isbn'] . '-L.jpg';
     }
     // Parse shelf_ids

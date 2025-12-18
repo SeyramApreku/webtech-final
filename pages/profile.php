@@ -349,7 +349,7 @@ $conn->close();
                                         </a>
                                         <h6 class="mb-1"><?php echo htmlspecialchars($book['title']); ?></h6>
                                         <?php if ($is_own_profile): ?>
-                                            <form action="../api/reading-list-handler.php" method="POST" class="mt-2">
+                                            <form action="../api/reading-list-handler.php" method="POST" class="mt-2 reading-list-form">
                                                 <input type="hidden" name="book_id" value="<?php echo $book['book_id']; ?>">
                                                 <input type="hidden" name="action" value="remove">
                                                 <button class="btn btn-sm btn-outline-danger w-100">Remove</button>
@@ -414,7 +414,7 @@ $conn->close();
                                         </a>
                                         <h6 class="mb-1"><?php echo htmlspecialchars($book['title']); ?></h6>
                                         <?php if ($is_own_profile): ?>
-                                            <form action="../api/reading-list-handler.php" method="POST" class="mt-2">
+                                            <form action="../api/reading-list-handler.php" method="POST" class="mt-2 reading-list-form">
                                                 <input type="hidden" name="book_id" value="<?php echo $book['book_id']; ?>">
                                                 <input type="hidden" name="action" value="remove">
                                                 <button class="btn btn-sm btn-outline-danger w-100">Remove</button>
@@ -483,7 +483,7 @@ $conn->close();
                                         </a>
                                         <h6 class="mb-1"><?php echo htmlspecialchars($book['title']); ?></h6>
                                         <?php if ($is_own_profile): ?>
-                                            <form action="../api/reading-list-handler.php" method="POST" class="mt-2">
+                                            <form action="../api/reading-list-handler.php" method="POST" class="mt-2 reading-list-form">
                                                 <input type="hidden" name="book_id" value="<?php echo $book['book_id']; ?>">
                                                 <input type="hidden" name="action" value="remove">
                                                 <button class="btn btn-sm btn-outline-danger w-100">Remove</button>
@@ -620,6 +620,28 @@ $conn->close();
 
     <?php include '../includes/footer.php'; ?>
     <script src="../js/interactions.js"></script>
+
+    <script>
+    // Tab Persistence Logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const activeTab = localStorage.getItem('profileActiveTab');
+        if (activeTab) {
+            const tabEl = document.querySelector(`button[data-bs-target="${activeTab}"], a[href="${activeTab}"]`);
+            if (tabEl) {
+                const tab = new bootstrap.Tab(tabEl);
+                tab.show();
+            }
+        }
+
+        const tabLinks = document.querySelectorAll('button[data-bs-toggle="tab"], a[data-bs-toggle="tab"]');
+        tabLinks.forEach(link => {
+            link.addEventListener('shown.bs.tab', function(e) {
+                const target = e.target.getAttribute('data-bs-target') || e.target.getAttribute('href');
+                localStorage.setItem('profileActiveTab', target);
+            });
+        });
+    });
+    </script>
 </body>
 
 </html>

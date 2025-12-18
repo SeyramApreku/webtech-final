@@ -134,9 +134,26 @@ $all_books = $conn->query("SELECT * FROM books ORDER BY title");
                             <div class="col-md-6 mb-3">
                                 <div
                                     style="display: flex; gap: 1rem; background-color: var(--soft-sand); padding: 1rem; border-radius: 8px;">
-                                    <?php if ($all_book['cover_url']): ?>
-                                        <img src="<?php echo htmlspecialchars($all_book['cover_url']); ?>"
+                                    <?php
+                                    // Reliable Cover Logic: Prioritize ISBN
+                                    $all_coverUrl = '';
+                                    if (!empty($all_book['isbn'])) {
+                                        $all_coverUrl = 'https://covers.openlibrary.org/b/isbn/' . $all_book['isbn'] . '-L.jpg';
+                                    } elseif (!empty($all_book['cover_url'])) {
+                                        $all_coverUrl = $all_book['cover_url'];
+                                        if (strpos($all_coverUrl, 'http') !== 0 && strpos($all_coverUrl, '../') !== 0) {
+                                            $all_coverUrl = '../' . $all_coverUrl;
+                                        }
+                                    }
+                                    ?>
+                                    <?php if ($all_coverUrl): ?>
+                                        <img src="<?php echo htmlspecialchars($all_coverUrl); ?>"
                                             style="width: 60px; height: 80px; object-fit: cover; border-radius: 4px;">
+                                    <?php else: ?>
+                                        <div
+                                            style="width: 60px; height: 80px; background: linear-gradient(135deg, var(--terracotta), var(--muted-gold)); border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                            <span style="color: white; font-size: 0.6rem; text-align: center;">No Image</span>
+                                        </div>
                                     <?php endif; ?>
                                     <div style="flex: 1;">
                                         <h6 style="margin-bottom: 0.25rem;">

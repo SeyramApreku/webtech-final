@@ -63,7 +63,48 @@ document.addEventListener('click', function (e) {
         return;
     }
 
-    // --- 2. Handle Adding/Removing Books from Shelves (Forms) ---
+    // --- 2. Handle Reading List Removals (Forms on Profile) ---
+    const readingForm = e.target.closest('.reading-list-form');
+    if (e.target.closest('button') && readingForm) {
+        e.preventDefault();
+
+        const btn = e.target.closest('button');
+        const formData = new FormData(readingForm);
+        formData.append('ajax', '1');
+
+        // Show loading state
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '...';
+        btn.disabled = true;
+
+        fetch('../api/reading-list-handler.php', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the book card from the UI
+                    const card = readingForm.closest('.col-md-3');
+                    if (card) {
+                        card.style.opacity = '0';
+                        setTimeout(() => card.remove(), 300);
+                    }
+                } else {
+                    alert('Failed to remove from list.');
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                console.error("Error:", err);
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            });
+        return;
+    }
+
+    // --- 3. Handle Adding/Removing Books from Shelves (Forms) ---
     const shelfForm = e.target.closest('.add-to-shelf-form');
     if (e.target.closest('button') && shelfForm) {
         e.preventDefault();

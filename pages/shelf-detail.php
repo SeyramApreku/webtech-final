@@ -71,8 +71,14 @@ $all_books = $conn->query("SELECT * FROM books ORDER BY title");
                     <div class="col-md-3 mb-4">
                         <div class="book-card">
                             <a href="book-detail.php?id=<?php echo $book['book_id']; ?>">
-                                <?php if ($book['cover_url']): ?>
-                                    <img src="<?php echo htmlspecialchars($book['cover_url']); ?>"
+                                <?php
+                                $coverUrl = $book['cover_url'];
+                                if (empty($coverUrl) && !empty($book['isbn'])) {
+                                    $coverUrl = 'https://covers.openlibrary.org/b/isbn/' . $book['isbn'] . '-L.jpg';
+                                }
+                                ?>
+                                <?php if ($coverUrl): ?>
+                                    <img src="<?php echo htmlspecialchars($coverUrl); ?>"
                                         style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;"
                                         alt="<?php echo htmlspecialchars($book['title']); ?>">
                                 <?php else: ?>
@@ -133,7 +139,8 @@ $all_books = $conn->query("SELECT * FROM books ORDER BY title");
                                         <p class="book-author" style="margin-bottom: 0.5rem;">
                                             <?php echo htmlspecialchars($all_book['author']); ?>
                                         </p>
-                                        <form action="../api/add-to-shelf.php" method="POST" style="margin: 0;">
+                                        <form action="../api/add-to-shelf.php" method="POST" style="margin: 0;"
+                                            class="add-to-shelf-form">
                                             <input type="hidden" name="shelf_id" value="<?php echo $shelf_id; ?>">
                                             <input type="hidden" name="book_id" value="<?php echo $all_book['book_id']; ?>">
                                             <button type="submit" class="btn btn-primary btn-sm">Add</button>
@@ -148,14 +155,9 @@ $all_books = $conn->query("SELECT * FROM books ORDER BY title");
         </div>
     </div>
 
-    <footer>
-        <div class="container text-center">
-            <p style="margin-bottom: 0.5rem;">GriotShelf</p>
-            <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 0;">&copy; 2025 GriotShelf.</p>
-        </div>
-    </footer>
-
+    <?php include '../includes/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/interactions.js"></script>
 </body>
 
 </html>

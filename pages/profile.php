@@ -157,6 +157,7 @@ $conn->close();
     <title>
         <?php echo $is_own_profile ? "My Profile" : $user['username'] . "'s Profile"; ?> - GriotShelf
     </title>
+    <script src="../js/interactions.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -323,14 +324,23 @@ $conn->close();
                                 <div class="col-md-3 mb-4">
                                     <div class="book-card">
                                         <a href="book-detail.php?id=<?php echo $book['book_id']; ?>">
-                                            <img src="<?php 
-                                                $url = $book['cover_url'];
-                                                if (strpos($url, 'http') !== 0 && strpos($url, '../') !== 0) {
-                                                    $url = '../' . $url;
-                                                }
-                                                echo htmlspecialchars($url); 
-                                            ?>"
-                                                class="w-100 rounded mb-2" style="height: 200px; object-fit: cover;">
+                                            <?php 
+                                            $coverUrl = $book['cover_url'];
+                                            if (empty($coverUrl) && !empty($book['isbn'])) {
+                                                $coverUrl = 'https://covers.openlibrary.org/b/isbn/' . $book['isbn'] . '-L.jpg';
+                                            }
+                                            ?>
+                                            <?php if ($coverUrl): ?>
+                                                <img src="<?php echo htmlspecialchars($coverUrl); ?>"
+                                                    class="w-100 rounded mb-2" style="height: 200px; object-fit: cover;">
+                                            <?php else: ?>
+                                                <div style="width: 100%; height: 200px; background: linear-gradient(135deg, var(--terracotta), var(--muted-gold)); 
+                                                            border-radius: 8px; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                                    <p style="color: white; font-family: 'Playfair Display', serif; font-size: 1.2rem; text-align: center; padding: 1rem;">
+                                                        <?php echo htmlspecialchars($book['title']); ?>
+                                                    </p>
+                                                </div>
+                                            <?php endif; ?>
                                         </a>
                                         <h6 class="mb-1"><?php echo htmlspecialchars($book['title']); ?></h6>
                                         <?php if ($is_own_profile): ?>
@@ -373,8 +383,23 @@ $conn->close();
                                 <div class="col-md-3 mb-4">
                                     <div class="book-card">
                                         <a href="book-detail.php?id=<?php echo $book['book_id']; ?>">
-                                            <img src="<?php echo (strpos($book['cover_url'], 'http') === 0) ? htmlspecialchars($book['cover_url']) : '../' . htmlspecialchars($book['cover_url']); ?>"
-                                                class="w-100 rounded mb-2" style="height: 200px; object-fit: cover;">
+                                            <?php 
+                                            $coverUrl = $book['cover_url'];
+                                            if (empty($coverUrl) && !empty($book['isbn'])) {
+                                                $coverUrl = 'https://covers.openlibrary.org/b/isbn/' . $book['isbn'] . '-L.jpg';
+                                            }
+                                            ?>
+                                            <?php if ($coverUrl): ?>
+                                                <img src="<?php echo htmlspecialchars($coverUrl); ?>"
+                                                    class="w-100 rounded mb-2" style="height: 200px; object-fit: cover;">
+                                            <?php else: ?>
+                                                <div style="width: 100%; height: 200px; background: linear-gradient(135deg, var(--terracotta), var(--muted-gold)); 
+                                                            border-radius: 8px; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                                    <p style="color: white; font-family: 'Playfair Display', serif; font-size: 1.2rem; text-align: center; padding: 1rem;">
+                                                        <?php echo htmlspecialchars($book['title']); ?>
+                                                    </p>
+                                                </div>
+                                            <?php endif; ?>
                                         </a>
                                         <h6 class="mb-1"><?php echo htmlspecialchars($book['title']); ?></h6>
                                         <?php if ($is_own_profile): ?>
@@ -421,8 +446,23 @@ $conn->close();
                                 <div class="col-md-3 mb-4">
                                     <div class="book-card">
                                         <a href="book-detail.php?id=<?php echo $book['book_id']; ?>">
-                                            <img src="<?php echo (strpos($book['cover_url'], 'http') === 0) ? htmlspecialchars($book['cover_url']) : '../' . htmlspecialchars($book['cover_url']); ?>"
-                                                class="w-100 rounded mb-2" style="height: 200px; object-fit: cover;">
+                                            <?php 
+                                            $coverUrl = $book['cover_url'];
+                                            if (empty($coverUrl) && !empty($book['isbn'])) {
+                                                $coverUrl = 'https://covers.openlibrary.org/b/isbn/' . $book['isbn'] . '-L.jpg';
+                                            }
+                                            ?>
+                                            <?php if ($coverUrl): ?>
+                                                <img src="<?php echo htmlspecialchars($coverUrl); ?>"
+                                                    class="w-100 rounded mb-2" style="height: 200px; object-fit: cover;">
+                                            <?php else: ?>
+                                                <div style="width: 100%; height: 200px; background: linear-gradient(135deg, var(--terracotta), var(--muted-gold)); 
+                                                            border-radius: 8px; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                                    <p style="color: white; font-family: 'Playfair Display', serif; font-size: 1.2rem; text-align: center; padding: 1rem;">
+                                                        <?php echo htmlspecialchars($book['title']); ?>
+                                                    </p>
+                                                </div>
+                                            <?php endif; ?>
                                         </a>
                                         <h6 class="mb-1"><?php echo htmlspecialchars($book['title']); ?></h6>
                                         <?php if ($is_own_profile): ?>

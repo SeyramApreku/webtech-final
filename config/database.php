@@ -21,18 +21,16 @@ function getDBConnection()
         $port = getenv('MYSQLPORT') ?: 3306;
     }
 
-    $conn = @new mysqli($host, $username, $password, $dbname, $port);
+    // Suppress errors and handle them ourselves
+    mysqli_report(MYSQLI_REPORT_OFF);
+
+    // Create connection
+    $conn = new mysqli($host, $username, $password, $dbname, $port);
 
     // Check if connection was successful
     if ($conn->connect_error) {
-        // If connection failed, stop and show error
-        $error_msg = "Database connection failed: " . $conn->connect_error .
-            " | Host: " . $host .
-            " | Port: " . $port .
-            " | User: " . $username .
-            " | DB: " . $dbname;
-        error_log($error_msg); // Log the detailed error
-        die($error_msg); // Stop execution and show error
+        error_log("MySQL Connection Error: " . $conn->connect_error . " | Host: " . $host . " | Port: " . $port);
+        return false;
     }
 
     $conn->set_charset("utf8mb4");

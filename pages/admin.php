@@ -24,6 +24,11 @@ $reviews = $conn->query("SELECT r.*, b.title as book_title, u.username
                          JOIN users u ON r.user_id = u.user_id 
                          ORDER BY r.created_at DESC LIMIT 50");
 
+// 4. Analytics Data
+$total_books = $conn->query("SELECT COUNT(*) as total FROM books")->fetch_assoc()['total'];
+$total_users = $conn->query("SELECT COUNT(*) as total FROM users WHERE is_admin = 0")->fetch_assoc()['total'];
+$total_reviews = $conn->query("SELECT COUNT(*) as total FROM reviews")->fetch_assoc()['total'];
+
 $conn->close();
 ?>
 <!DOCTYPE html>
@@ -61,7 +66,27 @@ $conn->close();
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>
-
+        <!-- Analytical Summary Cards -->
+        <div class="row mb-5">
+            <div class="col-md-4">
+                <div class="card text-center" style="border: none; background-color: var(--soft-sand); padding: 20px;">
+                    <h3><?php echo $total_books; ?></h3>
+                    <p class="mb-0">Total Books</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center" style="border: none; background-color: var(--soft-sand); padding: 20px;">
+                    <h3><?php echo $total_users; ?></h3>
+                    <p class="mb-0">Registered Readers</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center" style="border: none; background-color: var(--soft-sand); padding: 20px;">
+                    <h3><?php echo $total_reviews; ?></h3>
+                    <p class="mb-0">Total Reviews</p>
+                </div>
+            </div>
+        </div>
         <!-- Dashboard Tabs -->
         <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
             <li class="nav-item">

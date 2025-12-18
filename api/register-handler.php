@@ -16,11 +16,23 @@ if (empty($username) || empty($first_name) || empty($last_name) || empty($email)
     exit();
 }
 
-// Validate password requirements
-if (strlen($password) < 8) {
+// 2. Validate password requirements (length, uppercase, lowercase, number, symbol)
+if (
+    strlen($password) < 8 ||
+    !preg_match('/[A-Z]/', $password) ||
+    !preg_match('/[a-z]/', $password) ||
+    !preg_match('/[0-9]/', $password) ||
+    !preg_match('/[^A-Za-z0-9]/', $password)
+) {
+
+    $_SESSION['error'] = "Password must meet all complexity requirements.";
+    header('Location: ../pages/register.php');
+    exit();
+}
+
 // 3. Confirm the passwords match
 if ($password !== $confirm_password) {
-    $_SESSION['error'] = "Passwords do not match";
+    $_SESSION['error'] = "Passwords do not match.";
     header('Location: ../pages/register.php');
     exit();
 }
@@ -62,4 +74,6 @@ if ($stmt->execute()) {
 
 $stmt->close();
 $conn->close();
-exit();?>
+
+exit();
+?>

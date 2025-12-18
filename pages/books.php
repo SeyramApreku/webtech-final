@@ -88,7 +88,6 @@ if (isset($_SESSION['user_id'])) {
         </div>
     </div>
 
-    <?php include '../includes/footer.php'; ?>
     <script>
         const searchInput = document.getElementById('searchInput');
         const genreFilter = document.getElementById('genreFilter');
@@ -201,7 +200,7 @@ if (isset($_SESSION['user_id'])) {
                         const avgRating = parseFloat(book.avg_rating) || 0;
                         const reviewCount = parseInt(book.review_count) || 0;
                         let starsHtml = '<div class="rating-display mb-2">';
-                        for(let i = 1; i <= 5; i++) {
+                        for (let i = 1; i <= 5; i++) {
                             starsHtml += `<span style="color: ${i <= Math.round(avgRating) ? 'var(--terracotta)' : '#ccc'};">★</span>`;
                         }
                         starsHtml += ` <small class="text-muted">(${avgRating.toFixed(1)})</small></div>`;
@@ -261,6 +260,7 @@ if (isset($_SESSION['user_id'])) {
         // Initial fetch
         fetchBooks();
     </script>
+    <?php include '../includes/footer.php'; ?>
     <script src="../js/interactions.js"></script>
 </body>
 

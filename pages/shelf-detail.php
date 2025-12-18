@@ -72,12 +72,15 @@ $all_books = $conn->query("SELECT * FROM books ORDER BY title");
                         <div class="book-card">
                             <a href="book-detail.php?id=<?php echo $book['book_id']; ?>">
                                 <?php
-                                $coverUrl = $book['cover_url'];
-                                if (empty($coverUrl) && !empty($book['isbn'])) {
+                                // Reliable Cover Logic: Prioritize ISBN
+                                $coverUrl = '';
+                                if (!empty($book['isbn'])) {
                                     $coverUrl = 'https://covers.openlibrary.org/b/isbn/' . $book['isbn'] . '-L.jpg';
-                                }
-                                if ($coverUrl && strpos($coverUrl, 'http') !== 0 && strpos($coverUrl, '../') !== 0) {
-                                    $coverUrl = '../' . $coverUrl;
+                                } elseif (!empty($book['cover_url'])) {
+                                    $coverUrl = $book['cover_url'];
+                                    if (strpos($coverUrl, 'http') !== 0 && strpos($coverUrl, '../') !== 0) {
+                                        $coverUrl = '../' . $coverUrl;
+                                    }
                                 }
                                 ?>
                                 <?php if ($coverUrl): ?>

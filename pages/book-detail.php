@@ -93,13 +93,15 @@ if (isset($_SESSION['user_id'])) {
         <div class="row">
             <div class="col-lg-4 mb-4">
                 <?php
-                $coverUrl = $book['cover_url'];
-                if (empty($coverUrl) && !empty($book['isbn'])) {
+                // Reliable Cover Logic: Prioritize Open Library via ISBN
+                $coverUrl = '';
+                if (!empty($book['isbn'])) {
                     $coverUrl = 'https://covers.openlibrary.org/b/isbn/' . $book['isbn'] . '-L.jpg';
-                }
-                // Handle relative local paths
-                if ($coverUrl && strpos($coverUrl, 'http') !== 0 && strpos($coverUrl, '../') !== 0) {
-                    $coverUrl = '../' . $coverUrl;
+                } elseif (!empty($book['cover_url'])) {
+                    $coverUrl = $book['cover_url'];
+                    if (strpos($coverUrl, 'http') !== 0 && strpos($coverUrl, '../') !== 0) {
+                        $coverUrl = '../' . $coverUrl;
+                    }
                 }
                 ?>
                 <?php if ($coverUrl): ?>

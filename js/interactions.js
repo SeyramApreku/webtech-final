@@ -1,6 +1,6 @@
 // GriotShelf Interactions
 // This script handles dynamic parts of the website using Event Delegation
-// so it works for both static and dynamically loaded content.
+// so it works for both static and dynamically loaded content without reloads.
 
 document.addEventListener('click', function (e) {
     // --- 1. Handle Reading Status Updates (Want to Read, etc.) ---
@@ -10,13 +10,17 @@ document.addEventListener('click', function (e) {
 
         const status = readingBtn.dataset.status;
         const bookId = readingBtn.dataset.bookId;
-        const action = readingBtn.dataset.action || 'add';
+        const dropdown = readingBtn.closest('.dropdown');
+        const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
 
         const formData = new FormData();
         formData.append('book_id', bookId);
         formData.append('status', status);
-        formData.append('action', action);
         formData.append('ajax', '1');
+
+        // Show loading state on the toggle button
+        const originalToggleHtml = dropdownToggle.innerHTML;
+        dropdownToggle.innerHTML = '...';
 
         fetch('../api/reading-list-handler.php', {
             method: 'POST',
@@ -25,23 +29,42 @@ document.addEventListener('click', function (e) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Reload to refresh all UI states and checkmarks
-                    location.reload();
+                    // Update UI in-place:
+                    // 1. Remove 'active' class and checkmarks from all sibling items
+                    const items = dropdown.querySelectorAll('.btn-reading-list');
+                    items.forEach(item => {
+                        item.classList.remove('active');
+                        const tick = item.querySelector('span');
+                        if (tick) tick.remove();
+                    });
+
+                    if (data.status === 'removed') {
+                        dropdownToggle.innerHTML = 'Select Status';
+                    } else {
+                        // 2. Mark this one as active and add checkmark
+                        readingBtn.classList.add('active');
+                        if (!readingBtn.querySelector('span')) {
+                            readingBtn.insertAdjacentHTML('beforeend', '<span class="ms-2">✓</span>');
+                        }
+                        // 3. Update toggle button text
+                        const newLabel = readingBtn.innerText.replace('✓', '').trim();
+                        dropdownToggle.innerHTML = newLabel;
+                    }
                 } else {
                     alert('Failed to update reading status.');
+                    dropdownToggle.innerHTML = originalToggleHtml;
                 }
             })
             .catch(err => {
                 console.error("Error:", err);
-                alert('An error occurred updating the reading list.');
+                dropdownToggle.innerHTML = originalToggleHtml;
+                alert('An error occurred.');
             });
         return;
     }
 
     // --- 2. Handle Adding/Removing Books from Shelves (Forms) ---
-    // If we click a button inside an .add-to-shelf-form
     const shelfForm = e.target.closest('.add-to-shelf-form');
-    // We listen for the button click specifically to avoid double-triggering
     if (e.target.closest('button') && shelfForm) {
         e.preventDefault();
 
@@ -60,8 +83,11 @@ document.addEventListener('click', function (e) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Reload to show the new tick or update the list
-                    location.reload();
+                    // Toggle checkmark in-place
+                    // We recreate the button content to ensure the tick is handled correctly
+                    const cleanName = btn.innerText.replace('✓', '').replace('...', '').trim();
+                    btn.innerHTML = cleanName + (data.action === 'added' ? '<span class="text-success ms-2">✓</span>' : '');
+                    btn.disabled = false;
                 } else {
                     alert(data.message || 'Failed to update shelf.');
                     btn.innerHTML = originalHtml;
@@ -70,9 +96,9 @@ document.addEventListener('click', function (e) {
             })
             .catch(err => {
                 console.error("Error:", err);
-                alert('An error occurred updating the shelf.');
                 btn.innerHTML = originalHtml;
                 btn.disabled = false;
+                alert('An error occurred.');
             });
         return;
     }
@@ -104,7 +130,7 @@ document.addEventListener('change', function (e) {
             });
     }
 
-    // Profile Privacy Toggles
+    // Profile Reading List Privacy Toggles
     if (e.target.classList.contains('reading-list-privacy-toggle')) {
         const listType = e.target.dataset.listType;
         const isPublic = e.target.checked ? 1 : 0;

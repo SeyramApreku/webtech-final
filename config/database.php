@@ -14,11 +14,22 @@ function getDBConnection()
         $port = $url_parts['port'];
     } else {
         // Fallback - Try individual variables
-        $host = getenv('MYSQLHOST') ?: 'localhost';
-        $dbname = getenv('MYSQLDATABASE') ?: 'griotshelf';
-        $username = getenv('MYSQLUSER') ?: 'root';
-        $password = getenv('MYSQLPASSWORD') ?: '';
+        $host = getenv('MYSQLHOST');
+        $dbname = getenv('MYSQLDATABASE');
+        $username = getenv('MYSQLUSER');
+        $password = getenv('MYSQLPASSWORD');
         $port = getenv('MYSQLPORT') ?: 3306;
+
+        if (!$host || !$username) {
+            error_log("Missing Railway DB Variables: MYSQLHOST=" . ($host ? 'set' : 'MISSING') . ", MYSQLUSER=" . ($username ? 'set' : 'MISSING'));
+            // Default to localhost only if we are truly local
+            if (php_sapi_name() === 'cli' || $_SERVER['REMOTE_ADDR'] === '127.0.0.1' || $_SERVER['REMOTE_ADDR'] === '::1') {
+                $host = $host ?: 'localhost';
+                $dbname = $dbname ?: 'griotshelf';
+                $username = $username ?: 'root';
+                $password = $password ?: '';
+            }
+        }
     }
 
     // Suppress errors and handle them ourselves

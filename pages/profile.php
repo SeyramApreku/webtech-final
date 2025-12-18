@@ -514,7 +514,7 @@ $conn->close();
                             <div class="col-md-4 mb-3">
                                 <div class="book-card">
                                     <h5><?php echo htmlspecialchars($shelf['shelf_name']); ?></h5>
-                                    <p class="text-muted small"><?php echo $shelf['book_count']; ?> books</p>
+                                    <p class="text-muted small"><span data-shelf-count-id="<?php echo $shelf['shelf_id']; ?>"><?php echo $shelf['book_count']; ?></span> books</p>
                                     
                                     <?php if ($is_own_profile): ?>
                                         <div class="d-flex align-items-center mb-2">

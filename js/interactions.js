@@ -125,10 +125,22 @@ document.addEventListener('click', function (e) {
             .then(data => {
                 if (data.success) {
                     // Toggle checkmark in-place
-                    // We recreate the button content to ensure the tick is handled correctly
                     const cleanName = btn.innerText.replace('✓', '').replace('...', '').trim();
                     btn.innerHTML = cleanName + (data.action === 'added' ? '<span class="text-success ms-2">✓</span>' : '');
                     btn.disabled = false;
+
+                    // 1. If we are on profile.php, update the count badge
+                    const countEl = document.querySelector(`[data-shelf-count-id="${formData.get('shelf_id')}"]`);
+                    if (countEl) {
+                        let count = parseInt(countEl.innerText);
+                        countEl.innerText = data.action === 'added' ? count + 1 : count - 1;
+                    }
+
+                    // 2. If we are on shelf-detail.php, we should eventually reload to show the new book list
+                    if (window.location.pathname.includes('shelf-detail.php')) {
+                        // Mark that a change happened so we reload when modal closes
+                        window.shelfChanged = true;
+                    }
                 } else {
                     alert(data.message || 'Failed to update shelf.');
                     btn.innerHTML = originalHtml;
@@ -142,6 +154,16 @@ document.addEventListener('click', function (e) {
                 alert('An error occurred.');
             });
         return;
+    }
+
+    // --- 4. Reload on modal close if shelf was changed ---
+    const addBooksModal = document.getElementById('addBooksModal');
+    if (addBooksModal) {
+        addBooksModal.addEventListener('hidden.bs.modal', function () {
+            if (window.shelfChanged) {
+                location.reload();
+            }
+        });
     }
 
     // --- 4. Handle Review Submissions (Forms on Book Detail) ---

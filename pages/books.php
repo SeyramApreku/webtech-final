@@ -197,6 +197,15 @@ if (isset($_SESSION['user_id'])) {
                                 </div>`;
                         }
 
+                        // Rating HTML
+                        const avgRating = parseFloat(book.avg_rating) || 0;
+                        const reviewCount = parseInt(book.review_count) || 0;
+                        let starsHtml = '<div class="rating-display mb-2">';
+                        for(let i = 1; i <= 5; i++) {
+                            starsHtml += `<span style="color: ${i <= Math.round(avgRating) ? 'var(--terracotta)' : '#ccc'};">★</span>`;
+                        }
+                        starsHtml += ` <small class="text-muted">(${avgRating.toFixed(1)})</small></div>`;
+
                         col.innerHTML = `
                             <div class="book-card h-100 d-flex flex-column">
                                 <a href="book-detail.php?id=${book.book_id}" style="text-decoration: none;">
@@ -204,6 +213,7 @@ if (isset($_SESSION['user_id'])) {
                                 </a>
                                 <h5>${book.title}</h5>
                                 <p class="book-author">by ${book.author}</p>
+                                ${starsHtml}
                                 ${regionBadge}
                                 <p style="font-size: 0.9rem; margin-bottom: 0.5rem;">
                                     ${book.description ? book.description.substring(0, 100) + '...' : ''}

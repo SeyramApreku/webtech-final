@@ -11,7 +11,10 @@ $book_id = $_GET['id'];
 $conn = getDBConnection();
 
 // Get book details
-$book_query = "SELECT * FROM books WHERE book_id = ?";
+$book_query = "SELECT b.*, 
+               (SELECT AVG(rating) FROM reviews WHERE book_id = b.book_id) as avg_rating,
+               (SELECT COUNT(*) FROM reviews WHERE book_id = b.book_id) as review_count
+               FROM books b WHERE b.book_id = ?";
 $stmt = $conn->prepare($book_query);
 $stmt->bind_param("i", $book_id);
 $stmt->execute();
@@ -198,10 +201,20 @@ if (isset($_SESSION['user_id'])) {
                 </p>
                 <p style="color: var(--muted-gold); margin-bottom: 1.5rem;">
                     <?php echo $book['publication_year']; ?> • <?php echo htmlspecialchars($book['genre']); ?>
-                    <?php if ($book['region']): ?>
-                        • <?php echo htmlspecialchars($book['region']); ?>
-                    <?php endif; ?>
                 </p>
+                <div class="mb-3">
+                    <?php
+                    $avg = round($book['avg_rating'] ?? 0);
+                    $review_count = $book['review_count'] ?? 0;
+                    for ($i = 1; $i <= 5; $i++) {
+                        echo '<span style="color: ' . ($i <= $avg ? 'var(--terracotta)' : '#ccc') . '; font-size: 1.2rem;">★</span>';
+                    }
+                    ?>
+                    <span class="ms-2" style="font-weight: 600;">
+                        <?php echo number_format($book['avg_rating'] ?? 0, 1); ?>
+                    </span>
+                    <span class="text-muted ms-1">(<?php echo $review_count; ?> reviews)</span>
+                </div>
 
                 <div class="row mb-4"
                     style="font-size: 0.9rem; color: var(--charcoal); opacity: 0.9; background-color: var(--warm-ivory); padding: 1rem; border-radius: 8px;">

@@ -13,17 +13,23 @@ $genre = isset($_GET['genre']) ? $_GET['genre'] : '';
 $year = isset($_GET['year']) ? $_GET['year'] : '';
 $region = isset($_GET['region']) ? $_GET['region'] : '';
 
-// Build query - include reading list status if user is logged in
+// Build query - include reading list status, shelf info, and ratings
 if ($user_id) {
     $sql = "SELECT b.*, rl.status as reading_status,
             (SELECT GROUP_CONCAT(sb.shelf_id) FROM shelf_books sb 
              JOIN shelves s ON sb.shelf_id = s.shelf_id 
-             WHERE sb.book_id = b.book_id AND s.user_id = ?) as shelf_ids
+             WHERE sb.book_id = b.book_id AND s.user_id = ?) as shelf_ids,
+            (SELECT AVG(rating) FROM reviews WHERE book_id = b.book_id) as avg_rating,
+            (SELECT COUNT(*) FROM reviews WHERE book_id = b.book_id) as review_count
             FROM books b 
             LEFT JOIN reading_list rl ON b.book_id = rl.book_id AND rl.user_id = ? 
             WHERE 1=1";
 } else {
-    $sql = "SELECT * FROM books WHERE 1=1";
+    $sql = "SELECT b.*, 
+            (SELECT AVG(rating) FROM reviews WHERE book_id = b.book_id) as avg_rating,
+            (SELECT COUNT(*) FROM reviews WHERE book_id = b.book_id) as review_count
+            FROM books b 
+            WHERE 1=1";
 }
 
 $params = [];

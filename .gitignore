@@ -1,0 +1,6 @@
+.DS_Store
+*.swp
+config/database.php.bak
+*.log
+.vscode/
+.idea/

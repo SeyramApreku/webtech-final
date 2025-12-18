@@ -259,7 +259,7 @@ if (isset($_SESSION['user_id'])) {
                         </h5>
 
                         <form action="../api/<?php echo $my_review ? 'edit-review.php' : 'review-handler.php'; ?>"
-                            method="POST">
+                            method="POST" class="review-form">
                             <input type="hidden" name="book_id" value="<?php echo $book_id; ?>">
                             <?php if ($my_review): ?>
                                 <input type="hidden" name="review_id" value="<?php echo $my_review['review_id']; ?>">

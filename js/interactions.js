@@ -143,6 +143,41 @@ document.addEventListener('click', function (e) {
             });
         return;
     }
+
+    // --- 4. Handle Review Submissions (Forms on Book Detail) ---
+    const reviewForm = e.target.closest('.review-form');
+    if (e.target.closest('button') && reviewForm) {
+        e.preventDefault();
+
+        const btn = e.target.closest('button');
+        const formData = new FormData(reviewForm);
+        formData.append('ajax', '1');
+
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '...';
+        btn.disabled = true;
+
+        fetch(reviewForm.action, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.message || 'Failed to submit review.');
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                console.error("Error:", err);
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            });
+        return;
+    }
 });
 
 // --- 3. Privacy Toggles (These are checkboxes, so we use 'change' event delegation) ---

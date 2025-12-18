@@ -82,6 +82,10 @@ while ($row = $result->fetch_assoc()) {
     if (empty($row['cover_url']) && !empty($row['isbn'])) {
         $row['cover_url'] = 'https://covers.openlibrary.org/b/isbn/' . $row['isbn'] . '-L.jpg';
     }
+    // Prefix relative paths for the frontend
+    if (!empty($row['cover_url']) && strpos($row['cover_url'], 'http') !== 0 && strpos($row['cover_url'], '../') !== 0) {
+        $row['cover_url'] = '../' . $row['cover_url'];
+    }
     // Parse shelf_ids
     $row['shelves'] = [];
     if (!empty($row['shelf_ids'])) {

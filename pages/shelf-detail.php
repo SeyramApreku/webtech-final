@@ -76,6 +76,9 @@ $all_books = $conn->query("SELECT * FROM books ORDER BY title");
                                 if (empty($coverUrl) && !empty($book['isbn'])) {
                                     $coverUrl = 'https://covers.openlibrary.org/b/isbn/' . $book['isbn'] . '-L.jpg';
                                 }
+                                if ($coverUrl && strpos($coverUrl, 'http') !== 0 && strpos($coverUrl, '../') !== 0) {
+                                    $coverUrl = '../' . $coverUrl;
+                                }
                                 ?>
                                 <?php if ($coverUrl): ?>
                                     <img src="<?php echo htmlspecialchars($coverUrl); ?>"
@@ -156,7 +159,6 @@ $all_books = $conn->query("SELECT * FROM books ORDER BY title");
     </div>
 
     <?php include '../includes/footer.php'; ?>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/interactions.js"></script>
 </body>
 

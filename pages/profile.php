@@ -157,7 +157,6 @@ $conn->close();
     <title>
         <?php echo $is_own_profile ? "My Profile" : $user['username'] . "'s Profile"; ?> - GriotShelf
     </title>
-    <script src="../js/interactions.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -329,6 +328,9 @@ $conn->close();
                                             if (empty($coverUrl) && !empty($book['isbn'])) {
                                                 $coverUrl = 'https://covers.openlibrary.org/b/isbn/' . $book['isbn'] . '-L.jpg';
                                             }
+                                            if ($coverUrl && strpos($coverUrl, 'http') !== 0 && strpos($coverUrl, '../') !== 0) {
+                                                $coverUrl = '../' . $coverUrl;
+                                            }
                                             ?>
                                             <?php if ($coverUrl): ?>
                                                 <img src="<?php echo htmlspecialchars($coverUrl); ?>"
@@ -387,6 +389,9 @@ $conn->close();
                                             $coverUrl = $book['cover_url'];
                                             if (empty($coverUrl) && !empty($book['isbn'])) {
                                                 $coverUrl = 'https://covers.openlibrary.org/b/isbn/' . $book['isbn'] . '-L.jpg';
+                                            }
+                                            if ($coverUrl && strpos($coverUrl, 'http') !== 0 && strpos($coverUrl, '../') !== 0) {
+                                                $coverUrl = '../' . $coverUrl;
                                             }
                                             ?>
                                             <?php if ($coverUrl): ?>
@@ -450,6 +455,9 @@ $conn->close();
                                             $coverUrl = $book['cover_url'];
                                             if (empty($coverUrl) && !empty($book['isbn'])) {
                                                 $coverUrl = 'https://covers.openlibrary.org/b/isbn/' . $book['isbn'] . '-L.jpg';
+                                            }
+                                            if ($coverUrl && strpos($coverUrl, 'http') !== 0 && strpos($coverUrl, '../') !== 0) {
+                                                $coverUrl = '../' . $coverUrl;
                                             }
                                             ?>
                                             <?php if ($coverUrl): ?>
@@ -602,7 +610,6 @@ $conn->close();
     <?php endif; ?>
 
     <?php include '../includes/footer.php'; ?>
-
     <script src="../js/interactions.js"></script>
 </body>
 

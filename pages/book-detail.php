@@ -82,6 +82,7 @@ if (isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($book['title']); ?> - GriotShelf</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
 </head>
 
@@ -93,8 +94,12 @@ if (isset($_SESSION['user_id'])) {
             <div class="col-lg-4 mb-4">
                 <?php
                 $coverUrl = $book['cover_url'];
-                if (!empty($book['isbn'])) {
+                if (empty($coverUrl) && !empty($book['isbn'])) {
                     $coverUrl = 'https://covers.openlibrary.org/b/isbn/' . $book['isbn'] . '-L.jpg';
+                }
+                // Handle relative local paths
+                if ($coverUrl && strpos($coverUrl, 'http') !== 0 && strpos($coverUrl, '../') !== 0) {
+                    $coverUrl = '../' . $coverUrl;
                 }
                 ?>
                 <?php if ($coverUrl): ?>

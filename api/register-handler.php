@@ -40,9 +40,21 @@ if ($password !== $confirm_password) {
 // 4. Connect to the database
 $conn = getDBConnection();
 
+if (!$conn) {
+    $_SESSION['error'] = "Database connection failed.";
+    header('Location: ../pages/register.php');
+    exit();
+}
+
 // 5. Check if the username or email already exists in the system
 $check_query = "SELECT user_id FROM users WHERE username = ? OR email = ?";
 $stmt = $conn->prepare($check_query);
+
+if (!$stmt) {
+    $_SESSION['error'] = "Database error: " . $conn->error . " (If this is a new deployment, you might need to import the database schema).";
+    header('Location: ../pages/register.php');
+    exit();
+}
 $stmt->bind_param("ss", $username, $email);
 $stmt->execute();
 if ($stmt->get_result()->num_rows > 0) {
@@ -58,6 +70,12 @@ $password_hash = password_hash($password, PASSWORD_DEFAULT);
 // 7. Insert the new user into the database
 $insert_query = "INSERT INTO users (username, first_name, last_name, email, password_hash) VALUES (?, ?, ?, ?, ?)";
 $stmt = $conn->prepare($insert_query);
+
+if (!$stmt) {
+    $_SESSION['error'] = "Database error during registration: " . $conn->error;
+    header('Location: ../pages/register.php');
+    exit();
+}
 $stmt->bind_param("sssss", $username, $first_name, $last_name, $email, $password_hash);
 
 if ($stmt->execute()) {

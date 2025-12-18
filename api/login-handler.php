@@ -13,11 +13,30 @@ if (empty($email) || empty($password)) {
 
 $conn = getDBConnection();
 
+if (!$conn) {
+    $_SESSION['error'] = "Database connection failed.";
+    header('Location: ../pages/login.php');
+    exit();
+}
+
 $query = "SELECT user_id, username, first_name, last_name, email, password_hash, is_admin FROM users WHERE email = ? OR username = ?";
 $stmt = $conn->prepare($query);
+
+if (!$stmt) {
+    $_SESSION['error'] = "Database error: " . $conn->error . " (If this is a new deployment, you might need to import the database schema).";
+    header('Location: ../pages/login.php');
+    exit();
+}
+
 $stmt->bind_param("ss", $email, $email);
 $stmt->execute();
 $result = $stmt->get_result();
+
+if (!$result) {
+    $_SESSION['error'] = "Query failed: " . $conn->error;
+    header('Location: ../pages/login.php');
+    exit();
+}
 
 if ($result->num_rows === 0) {
     $_SESSION['error'] = "No account found with that email";

@@ -1,13 +1,15 @@
 <?php
-function getDBConnection() {
-    $host = 'localhost';
-    $dbname = 'griotshelf';
-    $username = 'root';
-    $password = '';
+function getDBConnection()
+{
+    // Use Railway environment variables, fallback to localhost for local development
+    $host = getenv('MYSQLHOST') ?: 'localhost';
+    $dbname = getenv('MYSQLDATABASE') ?: 'griotshelf';
+    $username = getenv('MYSQLUSER') ?: 'root';
+    $password = getenv('MYSQLPASSWORD') ?: '';
+    $port = getenv('MYSQLPORT') ?: '3306';
 
+    $conn = new mysqli($host, $username, $password, $dbname, $port);
 
-    $conn = new mysqli($host, $username, $password, $dbname);
-    
     // Check if connection was successful
     if ($conn->connect_error) {
         // If connection failed, stop and show error

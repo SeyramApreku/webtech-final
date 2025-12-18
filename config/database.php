@@ -1,12 +1,25 @@
 <?php
 function getDBConnection()
 {
-    // Use Railway environment variables, fallback to localhost for local development
-    $host = getenv('MYSQLHOST') ?: 'localhost';
-    $dbname = getenv('MYSQLDATABASE') ?: 'griotshelf';
-    $username = getenv('MYSQLUSER') ?: 'root';
-    $password = getenv('MYSQLPASSWORD') ?: '';
-    $port = getenv('MYSQLPORT') ?: '3306';
+    // Try to get Railway's MySQL URL first
+    $mysql_url = getenv('MYSQL_PUBLIC_URL');
+
+    if ($mysql_url) {
+        // Parse the MySQL URL: mysql://user:password@host:port/database
+        $url_parts = parse_url($mysql_url);
+        $host = $url_parts['host'];
+        $username = $url_parts['user'];
+        $password = $url_parts['pass'];
+        $dbname = ltrim($url_parts['path'], '/');
+        $port = $url_parts['port'];
+    } else {
+        // Fallback to localhost for local development
+        $host = 'localhost';
+        $dbname = 'griotshelf';
+        $username = 'root';
+        $password = '';
+        $port = 3306;
+    }
 
     $conn = new mysqli($host, $username, $password, $dbname, $port);
 
